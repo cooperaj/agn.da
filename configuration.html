@@ -192,7 +192,10 @@
                 logIn: function() {
                     window.location = "https://legacy.joind.in/user/oauth_allow?"
                         + "api_key=" + this.app_config.joind_in_api_key
-                        + "&callback=" + encodeURIComponent(window.location.origin + "/callback.html");
+                        + "&callback=" + encodeURIComponent(
+                            window.location.origin
+                            + "/agn.da/callback.html"
+                        );
                 },
 
                 logOut: function() {

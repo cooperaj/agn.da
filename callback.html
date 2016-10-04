@@ -14,7 +14,9 @@
 
         function next_page(conf) {
             var json = JSON.stringify(conf);
-            window.location.href = window.location.origin + "/configuration.html#" + encodeURIComponent(json);
+            window.location.href = window.location.origin
+                + "/agn.da/configuration.html#"
+                + encodeURIComponent(json);
         }
 
         function error(msg) {
