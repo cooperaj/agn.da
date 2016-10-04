@@ -1,0 +1,40 @@
+{
+    "author": "adam.j.cooper@gmail.com",
+    "dependencies": {
+    },
+    "keywords": [],
+    "name": "agn.da",
+    "pebble": {
+        "capabilities": [
+            "configurable"
+        ],
+        "displayName": "Agn.da",
+        "enableMultiJS": true,
+        "messageKeys": [
+            "SetupComplete"
+        ],
+        "projectType": "native",
+        "resources": {
+            "media": [
+                {
+                    "file": "images/config-required.png",
+                    "name": "CONFIG_REQUIRED",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                }
+            ]
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite"
+        ],
+        "uuid": "72cd9a43-fc5f-4e63-b00d-9064debc0962",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}
