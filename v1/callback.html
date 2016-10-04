@@ -13,9 +13,13 @@
     <script type="text/javascript">
 
         function next_page(conf) {
+            var url_parts = window.location.pathname.split('/');
+            url_parts.pop();
+
             var json = JSON.stringify(conf);
             window.location.href = window.location.origin
-                + "/agn.da/configuration.html#"
+                + url_parts.join('/')
+                + "/configuration.html#"
                 + encodeURIComponent(json);
         }
 
