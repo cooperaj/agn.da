@@ -1,6 +1,9 @@
 build/
 .lock-waf*
 
+# Remove config file. A demo one is committed so this will hide our configuration
+# changes from the public repository
+src/pkjs/config.js
 
 # Created by https://www.gitignore.io/api/windows,osx,node
 
