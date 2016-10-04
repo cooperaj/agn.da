@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="css/config-page.css">
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+
+        .component-button {
+            text-align: center;
+        }
+
+        .section .component-button {
+            padding-bottom: 0;
+        }
+
+        .component-button .description {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .section .component-select {
+            padding: 0;
+        }
+
+        .component-select label {
+            position: relative;
+        }
+
+        .component-select .value {
+            position: relative;
+            padding-right: 1.1rem;
+            display: block;
+        }
+
+        .component-select .value:after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            margin-top: -0.1rem;
+            height: 0;
+            width: 0;
+            border-left: 0.425rem solid transparent;
+            border-right: 0.425rem solid transparent;
+            border-top: 0.425rem solid #ff4700;
+        }
+
+        .component-select select {
+            opacity: 0;
+            position: absolute;
+            display: block;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .component-submit {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="main-form" class="inputs" v-cloak>
+        <div class="component component-heading">
+            <h4>Agn.da</h4>
+        </div>
+        <div class="section" v-if="loggedIn">
+            <div class="component component-heading">
+                <h4>Event of interest</h4>
+            </div>
+            <div class="component component-select">
+                <label class="tap-highlight">
+                    <span class="label">Event of interest</span>
+                    <span class="value">Select event...</span>
+                    <select>
+                        <option value="" class="item-select-option">Select event...</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+        <div class="section">
+            <div class="component component-heading">
+                <h4>Authentication</h4>
+            </div>
+            <div id="login-button" class="component component-button" v-if="!loggedIn">
+                <button type="button" v-on:click="logIn">Login</button>
+
+                <div class="description">You'll need to login to <a href="http://joind.in">Joind.in</a> so we can get your upcoming events and favourited talks.</div>
+            </div>
+            <div id="logout-button" class="component component-button" v-if="loggedIn">
+                <button type="button" v-on:click="logOut">Logout</button>
+
+                <div class="description">You can logout of the <a href="http://joind.in">Joind.in</a> service. This will stop the application being able to access upcoming events and favourited talks. For added security you can visit your <a href="https://legacy.joind.in/user/apikey">Joind.in API page</a> and revoke the access permissions of Agn.da.</div>
+            </div>
+        </div>
+        <div class="component component-submit" v-if="loggedIn">
+            <button type="submit">Save Settings</button>
+        </div>
+    </form>
+
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#main-form",
+
+            data: {
+                app_config: null
+            },
+
+            created: function() {
+                var platform = window.navigator.userAgent.match(/android/i) ? 'android' : 'ios';
+                document.documentElement.classList.add('platform-' + platform);
+
+                this.loadConf();
+            },
+
+            computed: {
+                loggedIn: function() {
+                    return this.app_config.access_token !== null;
+                }
+            },
+
+            methods: {
+                /**
+                 * Overwrites obj1's values with obj2's and adds obj2's if non existent in obj1
+                 * @param obj1
+                 * @param obj2
+                 * @returns obj3 a new object based on obj1 and obj2
+                 */
+                mergeConf: function(obj1, obj2) {
+                    var obj3 = {};
+                    for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
+                    for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
+                    return obj3;
+                },
+
+                /**
+                 * Loads configuration information for the auth/access procedure from the localStorage,
+                 * location hash and query string.
+                 */
+                loadConf: function() {
+                    var loaded_conf = JSON.parse(window.localStorage.getItem("conf"));
+                    if (loaded_conf == null) {
+                        loaded_conf = {};
+                    }
+
+                    var json = window.location.hash;
+                    if (json) {
+                        json = json.substring(1);
+                    } else {
+                        json = "{}";
+                    }
+
+                    loaded_conf = this.mergeConf(loaded_conf, JSON.parse(decodeURIComponent(json)));
+
+                    var query_string = window.location.search;
+                    if (query_string) {
+                        query_string = query_string.substring(1);
+                    }
+
+                    var regex = /([^&=]+)=([^&]*)/g, m;
+                    while (m = regex.exec(query_string)) {
+                        loaded_conf[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+                    }
+
+                    // cleanup data that shouldn't exist together
+                    if (loaded_conf.access_token != null) {
+                        loaded_conf.joind_in_api_key = undefined;
+                    }
+
+
+                    this.app_config = loaded_conf;
+                    this.saveConf();
+                },
+
+                saveConf: function() {
+                    window.localStorage.setItem("conf", JSON.stringify(this.app_config));
+                },
+
+                logIn: function() {
+                    window.location = "https://legacy.joind.in/user/oauth_allow?"
+                        + "api_key=" + this.app_config.joind_in_api_key
+                        + "&callback=" + encodeURIComponent(window.location.origin + "/callback.html");
+                },
+
+                logOut: function() {
+                    this.app_config.access_token = null;
+                    this.saveConf();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

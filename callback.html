@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/config-page.css">
+</head>
+
+<body>
+    <script type="text/javascript">
+
+        function next_page(conf) {
+            var json = JSON.stringify(conf);
+            window.location.href = window.location.origin + "/configuration.html#" + encodeURIComponent(json);
+        }
+
+        function error(msg) {
+            next_page({
+                "access_token": '',
+                "error": msg
+            });
+        }
+
+        var query_string = window.location.search;
+        if (query_string) {
+            query_string = query_string.substring(1);
+        } else {
+            error('There was a problem communicating with Joind.in.');
+        }
+
+        var params = {}, regex = /([^&=]+)=([^&]*)/g, m;
+        while (m = regex.exec(query_string)) {
+            params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+        }
+
+        if (params.access_token) {
+            next_page(params);
+        } else {
+            error('You did not grant the Agn.da access to your Joind.in account.');
+        }
+
+    </script>
+</body>
+
+</html>
