@@ -73,7 +73,7 @@
 </head>
 
 <body>
-    <form id="main-form" class="inputs" v-cloak>
+    <form id="main-form" class="inputs" v-cloak v-on:submit.prevent="submitSettings">
         <div class="component component-heading">
             <h4>Agn.da</h4>
         </div>
@@ -106,7 +106,7 @@
                 <div class="description">You can logout of the <a href="http://joind.in">Joind.in</a> service. This will stop the application being able to access upcoming events and favourited talks. For added security you can visit your <a href="https://legacy.joind.in/user/apikey">Joind.in API page</a> and revoke the access permissions of Agn.da.</div>
             </div>
         </div>
-        <div class="component component-submit" v-if="loggedIn">
+        <div class="component component-submit">
             <button type="submit">Save Settings</button>
         </div>
     </form>
@@ -116,7 +116,7 @@
             el: "#main-form",
 
             data: {
-                app_config: null
+                app_config: ""
             },
 
             created: function() {
@@ -128,7 +128,7 @@
 
             computed: {
                 loggedIn: function() {
-                    return this.app_config.access_token !== null;
+                    return this.app_config.access_token != null;
                 }
             },
 
@@ -177,9 +177,8 @@
 
                     // cleanup data that shouldn't exist together
                     if (loaded_conf.access_token != null) {
-                        loaded_conf.joind_in_api_key = undefined;
+                        loaded_conf.joind_in_api_key = null;
                     }
-
 
                     this.app_config = loaded_conf;
                     this.saveConf();
@@ -190,17 +189,29 @@
                 },
 
                 logIn: function() {
+                    var url_parts = window.location.pathname.split('/');
+                    url_parts.pop();
+
                     window.location = "https://legacy.joind.in/user/oauth_allow?"
                         + "api_key=" + this.app_config.joind_in_api_key
                         + "&callback=" + encodeURIComponent(
                             window.location.origin
-                            + "/agn.da/callback.html"
+                            + url_parts.join('/')
+                            + "/callback.html"
                         );
                 },
 
                 logOut: function() {
                     this.app_config.access_token = null;
                     this.saveConf();
+                },
+
+                submitSettings: function() {
+                    console.log("Submitting settings: " + this.app_config.return_to
+                        + encodeURIComponent(JSON.stringify(this.app_config)));
+
+                    window.location = this.app_config.return_to
+                        + encodeURIComponent(JSON.stringify(this.app_config));
                 }
             }
         });
