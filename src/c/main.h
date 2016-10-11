@@ -1,9 +1,9 @@
 #pragma once
 #include <pebble.h>
 
-typedef struct ClaySettings {
-  char Event_ID[6];
-} __attribute__((__packed__)) ClaySettings;
+typedef struct AppSettings {
+  uint8_t SetupComplete;
+} __attribute__((__packed__)) AppSettings;
 
 static bool loadSettings();
 static void saveSettings();
