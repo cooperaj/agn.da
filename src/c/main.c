@@ -1,6 +1,7 @@
 #include <pebble.h>
 #include "main.h"
 #include "windows/setup.h"
+#include "windows/ready.h"
 
 // A struct for our specific settings (see main.h)
 AppSettings settings;
@@ -10,7 +11,7 @@ static bool loadSettings() {
   persist_read_data(1, &settings, sizeof(settings));
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Load settings: SetupComplete: %s", settings.SetupComplete ? "true" : "false");
 
-  return !settings.SetupComplete;
+  return settings.SetupComplete;
 }
 
 static void saveSettings() {
@@ -34,7 +35,7 @@ static void init() {
   app_message_open(128, 128);
 
   if (loadSettings()) {
-    // dialog_ready_window_push();
+    dialog_ready_window_push();
   } else {
     dialog_setup_window_push();
   }
